@@ -9,8 +9,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.tmartins.currencyexchanges.data.datasource.ExchangeRemoteDataSource
 import org.tmartins.currencyexchanges.data.network.ApiService
 import org.tmartins.currencyexchanges.data.repository.ExchangeRepositoryImpl
+import org.tmartins.currencyexchanges.domain.interfaces.ConvertCurrencyUseCase
 import org.tmartins.currencyexchanges.domain.interfaces.ExchangeRepository
 import org.tmartins.currencyexchanges.domain.interfaces.GetLatestRatesUseCase
+import org.tmartins.currencyexchanges.domain.usecase.ConvertCurrencyUseCaseImpl
 import org.tmartins.currencyexchanges.domain.usecase.GetLatestRatesUseCaseImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -62,4 +64,8 @@ class AppModule {
     @Provides
     fun providesGetLatestRatesUseCase(exchangeRepository: ExchangeRepository): GetLatestRatesUseCase =
         GetLatestRatesUseCaseImpl(exchangeRepository)
+
+    @Provides
+    fun providesConvertCurrencyUseCase(exchangeRepository: ExchangeRepository): ConvertCurrencyUseCase =
+        ConvertCurrencyUseCaseImpl(exchangeRepository)
 }

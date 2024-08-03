@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.tmartins.currencyexchanges.data.datasource.ExchangeRemoteDataSource
 import org.tmartins.currencyexchanges.data.network.ApiService
 import org.tmartins.currencyexchanges.data.repository.ExchangeRepositoryImpl
@@ -20,16 +22,32 @@ private const val BASE_URL = "https://www.frankfurter.app"
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
-    private val client: Retrofit by lazy {
-        Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
-    }
-
-    @Provides
     @Singleton
-    fun providesApiService(): ApiService = client.create(ApiService::class.java)
+    @Provides
+    fun providesHttpLoggingInterceptor() = HttpLoggingInterceptor()
+        .apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+    @Singleton
+    @Provides
+    fun providesOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+        .addConverterFactory(MoshiConverterFactory.create())
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .build()
+
+    @Singleton
+    @Provides
+    fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
     @Provides
     @Singleton
@@ -44,5 +62,4 @@ class AppModule {
     @Provides
     fun providesGetLatestRatesUseCase(exchangeRepository: ExchangeRepository): GetLatestRatesUseCase =
         GetLatestRatesUseCaseImpl(exchangeRepository)
-
 }

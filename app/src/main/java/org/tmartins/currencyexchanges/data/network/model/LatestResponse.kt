@@ -1,5 +1,7 @@
 package org.tmartins.currencyexchanges.data.network.model
 
+import com.squareup.moshi.JsonClass
+
 /**
  * Represents an API response containing latest exchange rates.
  *
@@ -8,6 +10,7 @@ package org.tmartins.currencyexchanges.data.network.model
  * @param date The date of the exchange rates.
  * @param rates A map of currency codes to exchange rates.
  */
+@JsonClass(generateAdapter = true)
 data class LatestResponse(
     val amount: Double,
     val base: String,

@@ -8,6 +8,8 @@ import org.tmartins.currencyexchanges.data.datasource.ExchangeRemoteDataSource
 import org.tmartins.currencyexchanges.data.network.ApiService
 import org.tmartins.currencyexchanges.data.repository.ExchangeRepositoryImpl
 import org.tmartins.currencyexchanges.domain.interfaces.ExchangeRepository
+import org.tmartins.currencyexchanges.domain.interfaces.GetLatestRatesUseCase
+import org.tmartins.currencyexchanges.domain.usecase.GetLatestRatesUseCaseImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -38,4 +40,9 @@ class AppModule {
     @Singleton
     fun providesExchangeRepository(exchangeRemoteDataSource: ExchangeRemoteDataSource): ExchangeRepository =
         ExchangeRepositoryImpl(exchangeRemoteDataSource)
+
+    @Provides
+    fun providesGetLatestRatesUseCase(exchangeRepository: ExchangeRepository): GetLatestRatesUseCase =
+        GetLatestRatesUseCaseImpl(exchangeRepository)
+
 }

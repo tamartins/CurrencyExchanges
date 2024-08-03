@@ -2,6 +2,7 @@ package org.tmartins.currencyexchanges.data.repository
 
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -66,5 +67,46 @@ class ExchangeRepositoryImplTest {
         val result = exchangeRepositoryImpl.getRates()
 
         assertEquals(expectedRates, result)
+    }
+
+    @Test
+    fun `rateConversion returns null when response is null`() = runBlocking {
+        coEvery { exchangeRemoteDataSource.fetchLatest(any(), any(), any()) } returns null
+
+        val result = exchangeRepositoryImpl.rateConversion(10.0, "USD", "EUR")
+
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun `rateConversion returns Rate when response is successful`() = runBlocking {
+        val latestResponse = LatestResponse(
+            rates = mapOf("EUR" to 1.0),
+            amount = 10.0,
+            base = "USD",
+            date = "2024-08-03"
+        )
+        val response = Response.success(latestResponse)
+        coEvery { exchangeRemoteDataSource.fetchLatest(any(), any(), any()) } returns response
+
+        val result = exchangeRepositoryImpl.rateConversion(10.0, "USD", "EUR")
+
+        assertEquals(Rate("EUR", 1.0), result)
+    }
+
+    @Test
+    fun `rateConversion returns null when rates are empty`() = runBlocking {
+        val latestResponse = LatestResponse(
+            rates = emptyMap(),
+            amount = 10.0,
+            base = "USD",
+            date = "2024-08-03"
+        )
+        val response = Response.success(latestResponse)
+        coEvery { exchangeRemoteDataSource.fetchLatest(any(), any(), any()) } returns response
+
+        val result = exchangeRepositoryImpl.rateConversion(10.0, "USD", "EUR")
+
+        assertEquals(null, result)
     }
 }

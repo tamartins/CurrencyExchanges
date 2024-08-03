@@ -16,4 +16,10 @@ class ExchangeRepositoryImpl(private val exchangeRemoteDataSource: ExchangeRemot
         if (response == null || !response.isSuccessful) return emptyList()
         return response.body()?.toRates() ?: emptyList()
     }
+
+    override suspend fun rateConversion(amount: Double, from: String, to: String): Rate? {
+        val response = exchangeRemoteDataSource.fetchLatest(amount, from, to)
+        if (response == null || !response.isSuccessful) return null
+        return response.body()?.toRates()?.firstOrNull()
+    }
 }

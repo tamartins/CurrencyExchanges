@@ -7,5 +7,9 @@ import org.tmartins.currencyexchanges.data.network.ApiService
  */
 class ExchangeRemoteDataSource(private val apiService: ApiService) {
 
-    suspend fun fetchLatest() = apiService.getLatest()
+    suspend fun fetchLatest(
+        amount: Double? = null,
+        from: String? = null,
+        to: String? = null,
+    ) = apiService.getLatest(amount, from, to)
 }

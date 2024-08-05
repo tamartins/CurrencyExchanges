@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.tmartins.currencyexchanges.ui.NavigationScreen
+import org.tmartins.currencyexchanges.ui.conversion.ConversionScreen
 import org.tmartins.currencyexchanges.ui.list.RatesList
 
 @Composable
@@ -16,7 +17,13 @@ fun AppNavigation(navHostController: NavHostController = rememberNavController()
     )
     {
         composable(NavigationScreen.List.route) {
-            RatesList()
+            RatesList() {
+                navHostController.navigate(NavigationScreen.Conversion.route)
+            }
+        }
+
+        composable(NavigationScreen.Conversion.route) {
+            ConversionScreen()
         }
     }
 }

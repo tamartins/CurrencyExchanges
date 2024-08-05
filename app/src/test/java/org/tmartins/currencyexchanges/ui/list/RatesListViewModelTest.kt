@@ -20,12 +20,13 @@ import org.tmartins.currencyexchanges.domain.model.Rate
 class RatesListViewModelTest {
 
     private val getLatestRatesUseCase = mockk<GetLatestRatesUseCase>()
-    private var viewModel = RatesListViewModel(getLatestRatesUseCase)
+    private lateinit var viewModel: RatesListViewModel
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        viewModel = RatesListViewModel(getLatestRatesUseCase)
     }
 
     @After
@@ -34,13 +35,13 @@ class RatesListViewModelTest {
     }
 
     @Test
-    fun `uiState emits Loading initially`() = runTest {
+    fun `uiState emits Loading initially`() = runTest(testDispatcher) {
         val initialState = viewModel.uiState.first()
         assertEquals(Result.Loading, initialState)
     }
 
     @Test
-    fun `uiState emits Success when getRates is successful`() = runTest {
+    fun `uiState emits Success when getRates is successful`() = runTest(testDispatcher) {
         val rates = listOf(Rate("EUR", 1.5))
         coEvery { getLatestRatesUseCase.getLatestRates() } returns rates
 
@@ -49,7 +50,7 @@ class RatesListViewModelTest {
     }
 
     @Test
-    fun `uiState emits Error when getRates throws exception`() = runTest {
+    fun `uiState emits Error when getRates throws exception`() = runTest(testDispatcher) {
         coEvery { getLatestRatesUseCase.getLatestRates() } throws Exception("Network error")
 
         val state = viewModel.uiState.first { it is Result.Error }

@@ -2,6 +2,7 @@ package org.tmartins.currencyexchanges.data.network.mapper
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.tmartins.currencyexchanges.data.mapper.toRates
 import org.tmartins.currencyexchanges.data.network.model.LatestResponse
 import org.tmartins.currencyexchanges.domain.model.Rate
 

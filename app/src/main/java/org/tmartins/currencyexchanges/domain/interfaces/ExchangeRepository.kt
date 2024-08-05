@@ -1,5 +1,6 @@
 package org.tmartins.currencyexchanges.domain.interfaces
 
+import org.tmartins.currencyexchanges.domain.model.Currency
 import org.tmartins.currencyexchanges.domain.model.Rate
 
 /**
@@ -23,4 +24,16 @@ interface ExchangeRepository {
      * @return A [Rate] object representing the converted amount, or `null` if the conversion fails.
      */
     suspend fun rateConversion(amount: Double, from: String, to: String): Rate?
+
+    /**
+     * Retrieves a list of currencies.
+     *
+     * @return A list of [Currency] objects.
+     */
+    suspend fun getCurrencies(): List<Currency>
+
+    /**
+     * Updates the list of currencies.
+     */
+    suspend fun updateCurrencies()
 }

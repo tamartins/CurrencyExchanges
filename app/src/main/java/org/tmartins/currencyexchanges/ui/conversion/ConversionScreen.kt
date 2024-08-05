@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -22,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.tmartins.currencyexchanges.R
+import org.tmartins.currencyexchanges.domain.model.Currency
 
 @Composable
 fun ConversionScreen(viewModel: ConversionScreenViewModel = hiltViewModel()) {
@@ -29,6 +34,7 @@ fun ConversionScreen(viewModel: ConversionScreenViewModel = hiltViewModel()) {
     var from by remember { mutableStateOf("") }
     var to by remember { mutableStateOf("") }
     val conversionValue by viewModel.onConversionValue.collectAsStateWithLifecycle()
+    val currencies by viewModel.currencies.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -46,21 +52,15 @@ fun ConversionScreen(viewModel: ConversionScreenViewModel = hiltViewModel()) {
 
         ViewsSpace()
 
-        TextField(
-            value = from.uppercase(),
-            onValueChange = { if (it.length <= 3) from = it },
-            label = { Text(stringResource(id = R.string.convert_from)) })
+        DropdownList(R.string.convert_from, currencies) { from = it }
 
         ViewsSpace()
 
-        TextField(
-            value = to.uppercase(),
-            onValueChange = { if (it.length <= 3) to = it },
-            label = { Text(stringResource(id = R.string.convert_to)) })
+        DropdownList(R.string.convert_to, currencies) { to = it }
 
         ViewsSpace()
 
-        Text(text = conversionValue ?: stringResource(id =R.string.error))
+        Text(text = conversionValue ?: stringResource(id = R.string.error))
 
         ViewsSpace()
 
@@ -82,6 +82,51 @@ fun ConversionScreen(viewModel: ConversionScreenViewModel = hiltViewModel()) {
 @Composable
 fun ViewsSpace() {
     Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_generic)))
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DropdownList(label: Int, currencies: List<Currency>, onOptionClick: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOptionText by remember { mutableStateOf(currencies.firstOrNull()?.name ?: "") }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        }
+    ) {
+        TextField(
+            readOnly = true,
+            value = selectedOptionText,
+            onValueChange = { },
+            label = { Text(stringResource(id = label)) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        ) {
+            currencies.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedOptionText = selectionOption.name
+                        expanded = false
+                        onOptionClick.invoke(selectionOption.shortName)
+                    }
+                ) {
+                    Text(text = selectionOption.name)
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

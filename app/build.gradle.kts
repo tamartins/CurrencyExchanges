@@ -64,6 +64,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("androidx.arch.core:core-testing:2.2.0")

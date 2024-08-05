@@ -12,4 +12,6 @@ class ExchangeRemoteDataSource(private val apiService: ApiService) {
         from: String? = null,
         to: String? = null,
     ) = apiService.getLatest(amount, from, to)
+
+    suspend fun fetchCurrencies() = apiService.getCurrencies()
 }

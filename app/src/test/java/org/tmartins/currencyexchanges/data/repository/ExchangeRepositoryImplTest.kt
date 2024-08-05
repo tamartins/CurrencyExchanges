@@ -6,8 +6,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.tmartins.currencyexchanges.data.datasource.ExchangeLocalDataSource
 import org.tmartins.currencyexchanges.data.datasource.ExchangeRemoteDataSource
-import org.tmartins.currencyexchanges.data.network.mapper.toRates
+import org.tmartins.currencyexchanges.data.mapper.toRates
 import org.tmartins.currencyexchanges.data.network.model.LatestResponse
 import org.tmartins.currencyexchanges.domain.model.Rate
 import retrofit2.Response
@@ -15,7 +16,9 @@ import retrofit2.Response
 class ExchangeRepositoryImplTest {
 
     private val exchangeRemoteDataSource: ExchangeRemoteDataSource = mockk()
-    private val exchangeRepositoryImpl = ExchangeRepositoryImpl(exchangeRemoteDataSource)
+    private val exchangeLocalDataSource: ExchangeLocalDataSource = mockk()
+    private val exchangeRepositoryImpl =
+        ExchangeRepositoryImpl(exchangeRemoteDataSource, exchangeLocalDataSource)
 
     @Test
     fun `getRates returns empty list when response is null`() = runTest {

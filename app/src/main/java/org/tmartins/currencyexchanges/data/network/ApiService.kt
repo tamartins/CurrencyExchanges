@@ -16,4 +16,7 @@ interface ApiService {
         @Query("from") from: String? = null,
         @Query("to") to: String? = null,
     ): Response<LatestResponse?>?
+
+    @GET("/currencies")
+    suspend fun getCurrencies(): Response<Map<String, String>?>?
 }
